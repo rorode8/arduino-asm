@@ -19,11 +19,11 @@ start:
 // A bit like a loop()
 blink:
 	sbi   PORTA, 1 		; Set bit (make HIGH) PB5 (aka Digital Pin 13)
-  	ldi   r20, 10 		; How many 10mS do we want to delay
+  	ldi   r20, 50 		; How many 10mS do we want to delay
 	rcall delay_10ms	; call the 10mS delay with R20 suitably set
 
 	cbi   PORTA,1 		; Clear bit (make LOW) PB5 (aka Digital Pin 13)
-  	ldi   r20, 90		; how many 10mS loops to run?
+  	ldi   r20, 50		; how many 10mS loops to run?
   	rcall delay_10ms	; call the delay routine again
 
   /*
@@ -40,7 +40,7 @@ blink:
     Luckily we can add a value to a sixteen bit "upper register pair" in this
     case r26 and r27 and it will do all the necessary carry.
   */
-  	adiw	r26, 0x03		// Add "immediate" (ie fixed value or constant) to WORD (ie a 16-bit integer)
+  	adiw	r26, 0x02		// Add "immediate" (ie fixed value or constant) to WORD (ie a 16-bit integer)
 
   /*
   	Now we copy the value of 16-bit (when combined) registers r26 and then r27 back to

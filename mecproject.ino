@@ -16,7 +16,7 @@
  * memory location (it will be updated in the background via the
  * assembler routine)
  */
-volatile uint16_t myCounter asm("counter") __attribute__ ((used)) = 10;
+volatile uint16_t myCounter asm("counter") __attribute__ ((used)) = 0;
 
 /*
  * The "used" attribute means that despite appearances, we're telling the
