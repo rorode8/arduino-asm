@@ -13,16 +13,23 @@
 
 // A bit like setup()
 start:
-  	sbi   DDRA,1		; Set PB5 (digital pin 13) as output
+  	sbi   DDRA,1		; Set PA1 (digital pin 23) as output
+    sbi   DDRA,3    ; Set PA2 (digital pin 25)
+    
+    
+    
+    ldi   r17,0;
+    ldi   r19,0;
+    
   	ret					; return to calling program
 
 // A bit like a loop()
 blink:
-	sbi   PORTA, 1 		; Set bit (make HIGH) PB5 (aka Digital Pin 13)
+	sbi   PORTA, 1 		; Set bit (make HIGH) PA1 
   	ldi   r20, 50 		; How many 10mS do we want to delay
 	rcall delay_10ms	; call the 10mS delay with R20 suitably set
 
-	cbi   PORTA,1 		; Clear bit (make LOW) PB5 (aka Digital Pin 13)
+	cbi   PORTA,1 		; Clear bit (make LOW) PA1 
   	ldi   r20, 50		; how many 10mS loops to run?
   	rcall delay_10ms	; call the delay routine again
 
@@ -33,6 +40,7 @@ blink:
   	separate 8-bit registers, the X register, specifically designed for this.
 
   */
+    
   	lds	r26, counter 	; low (LSB) byte of counter 2-byte integer
   	lds	r27, counter+1 	; high (MSB) byte of counter 2-byte integer
 
@@ -40,17 +48,32 @@ blink:
     Luckily we can add a value to a sixteen bit "upper register pair" in this
     case r26 and r27 and it will do all the necessary carry.
   */
-  	adiw	r26, 0x02		// Add "immediate" (ie fixed value or constant) to WORD (ie a 16-bit integer)
+  	adiw	r26, 0x01		// Add "immediate" (ie fixed value or constant) to WORD (ie a 16-bit integer)
 
   /*
   	Now we copy the value of 16-bit (when combined) registers r26 and then r27 back to
   	our "data space" - in this case our external variable called counter.
   */
- 	sts	counter, r26	// move the low byte back to the LSB of counter
-  sts	counter+1, r27	// move the high byte back to the MSB of counter
+ 	
+  
+  lds r17,segs
+  inc r17      
+  cpi r17,59
+  brbc  1,skip
+  rjmp minutes
+  cpi r19,59
+  brbc  1,skip
+  rjmp  hours
+  
+  
+
+ skip:
+ sts segs,r17
+ sts  counter, r26  // move the low byte back to the LSB of counter
+ sts counter+1, r27  // move the high byte back to the MSB of counter
 
   // All done, return to calling program
-  	ret
+  ret
 
 
 
@@ -85,3 +108,16 @@ innerLoop: 				; We're going to count down from that fixed value to zero
 	// (10 * 159,991) +1 +4 -1 = 1,599,910 +1 +4 +1 = 1,599,914 clock cycles (we really need 1,600,000)
 	// which is not 100ms (0.1 sec) but 99.994375ms (0.9999 sec), an error of 0.00245%.
 	// Oh well, this just a demo.
+minutes:
+  ldi r17,0;
+  inc r19;  
+  sbi   PORTA, 3     ; Set bit (make HIGH) PA3   
+  rjmp  skip        ;
+
+hours:  
+  ldi r19,0;
+  rjmp  skip        ;
+  
+
+
+ 
